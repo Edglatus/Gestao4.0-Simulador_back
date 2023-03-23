@@ -3,12 +3,17 @@ import ScenarioController from "../../controllers/ScenarioController";
 import { schemas, validateSchema } from "../../middlewares/validateSchema";
 
 export default (app: Express) => {
-    app
-      .route("/scenario")
-      .get(ScenarioController.getScenarios)
-      .post(validateSchema(schemas.scenario.create), ScenarioController.createScenario);
-    app.route("/scenario/preview").get(ScenarioController.getScenariosPreview);
-    app.route("/scenario/id/:id").get(ScenarioController.getScenario);
-    app.route("/scenario/id/:id/preview").get(ScenarioController.getScenarioPreview);
-    app.route("/scenario/lastUpdate").get(ScenarioController.getLastUpdate);
-  };
+  app
+    .route("/scenarios")
+    .get(ScenarioController.getScenarios)
+    .post(
+      validateSchema(schemas.scenario.create),
+      ScenarioController.createScenario
+    );
+  app.route("/scenarios/preview").get(ScenarioController.getScenariosPreview);
+  app.route("/scenarios/id/:id").get(ScenarioController.getScenario);
+  app
+    .route("/scenarios/id/:id/preview")
+    .get(ScenarioController.getScenarioPreview);
+  app.route("/scenarios/lastUpdate").get(ScenarioController.getLastUpdate);
+};
