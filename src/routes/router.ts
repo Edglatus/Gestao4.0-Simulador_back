@@ -7,10 +7,12 @@ import notFound from "./notFound";
 import questions from "./questions";
 import quiz from "./quiz";
 import quizItems from "./quizItems";
+import scenarios from "./scenarios";
 import themes from "./themes";
 
 export default (app: Express) => {
   healthCheck(app);
+  scenarios(app);
   quiz(app);
   quizItems(app);
   lists(app);
