@@ -1,7 +1,7 @@
 import { Express } from "express";
 import characters from "./characters";
 import healthCheck from "./healthCheck";
-import images from "./images";
+import files from "./files";
 import lists from "./lists";
 import notFound from "./notFound";
 import questions from "./questions";
@@ -19,6 +19,6 @@ export default (app: Express) => {
   questions(app);
   characters(app);
   themes(app);
-  images(app);
+  files(app);
   notFound(app);
 };
