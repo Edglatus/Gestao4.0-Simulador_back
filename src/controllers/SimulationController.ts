@@ -141,6 +141,7 @@ class SimulationConttroller {
           select: "-createdAt -updatedAt -__v",
           populate: [
             { path: "character", select: "-createdAt -updatedAt -__v" },
+            { path: "prefabAsset", select: "-createdAt -updatedAt -__v" },
           ],
         },
         {
@@ -198,6 +199,7 @@ class SimulationConttroller {
           select: "-createdAt -updatedAt -__v",
           populate: [
             { path: "character", select: "-createdAt -updatedAt -__v" },
+            { path: "prefabAsset", select: "-createdAt -updatedAt -__v" },
           ],
         },
         {
