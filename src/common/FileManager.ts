@@ -45,39 +45,44 @@ class FileManager {
   }
 
   private write(bucket: GridFSBucket, file: fileUpload.UploadedFile) {
-    return new Promise<ObjectId>(async (resolve, reject) => {
-      const { name, data, mimetype } = file;
-      const tempName = `${parse(name).name}_${new Date().getTime()}${
-        parse(name).ext
-      }`;
-      const path = join(this.directory, tempName);
-      writeFileSync(path, data);
-      const streamGridFS = bucket.openUploadStream(name, {
-        metadata: {
-          mimetype,
-        },
-      });
-      const readStream = createReadStream(path);
-      readStream
-        .pipe(streamGridFS)
-        .on("finish", () => {
-          unlinkSync(path);
-          resolve(streamGridFS.id);
-        })
-        .on("error", (error: any) => {
-          reject(error);
+    return new Promise<{ id: ObjectId; fileName: string }>(
+      async (resolve, reject) => {
+        const { name, data, mimetype } = file;
+        const tempName = `${parse(name).name}_${new Date().getTime()}${
+          parse(name).ext
+        }`;
+        const path = join(this.directory, tempName);
+        writeFileSync(path, data);
+        const streamGridFS = bucket.openUploadStream(name, {
+          metadata: {
+            mimetype,
+          },
         });
-    });
+        const readStream = createReadStream(path);
+        readStream
+          .pipe(streamGridFS)
+          .on("finish", () => {
+            unlinkSync(path);
+            resolve({
+              id: streamGridFS.id,
+              fileName: streamGridFS.filename,
+            });
+          })
+          .on("error", (error: any) => {
+            reject(error);
+          });
+      }
+    );
   }
 
   async upload(files: fileUpload.FileArray, bucketName: string) {
     const bucket = await this.initializeBucket(bucketName);
     const newFiles = this.handleFiles(files);
-    const ids: Array<ObjectId> = [];
+    const createdFiles: Array<{ id: ObjectId; fileName: string }> = [];
     for (const file of newFiles) {
-      ids.push(await this.write(bucket, file));
+      createdFiles.push(await this.write(bucket, file));
     }
-    return ids;
+    return createdFiles;
   }
 
   private read(_id: ObjectId, bucket: GridFSBucket) {

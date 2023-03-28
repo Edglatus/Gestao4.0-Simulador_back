@@ -10,6 +10,8 @@ import { IScenario } from "../models/Scenario";
 import { IScenarioLine } from "../models/ScenarioLine";
 import { IScenarioOption } from "../models/ScenarioOption";
 import { IScenarioOutcome } from "../models/ScenarioOutcome";
+import { ISimulationScenario } from "../models/SimulationScenario";
+import { ISimulationAsset } from "../models/SimulationAsset";
 
 export const validateSchema = (schema: ObjectSchema) => {
   return async (req: Request, res: Response, next: NextFunction) => {
@@ -104,7 +106,7 @@ export const schemas = {
       lineList: Joi.array()
         .items({
           prompt: Joi.string().required(),
-          options: Joi.array().items(Joi.number().required()).required(),
+          options: Joi.array().items(Joi.number()).required(),
           character: Joi.string()
             .regex(/^[0-9a-fA-F]{24}$/)
             .required(),
@@ -127,6 +129,65 @@ export const schemas = {
         )
         .required(),
       backgroundURL: Joi.string().required(),
+    }),
+  },
+  simulation: {
+    create: Joi.object<ISimulationScenario>({
+      title: Joi.string().required(),
+      description: Joi.string().required(),
+      characterList: Joi.array()
+        .items({
+          character: Joi.string()
+            .regex(/^[0-9a-fA-F]{24}$/)
+            .required(),
+          defaultDialogueId: Joi.number().required(),
+          mapLocationIndex: Joi.number().required(),
+          dialogueIds: Joi.array().items(Joi.number()).required(),
+          prefabAsset: Joi.string()
+            .regex(/^[0-9a-fA-F]{24}$/)
+            .required(),
+        })
+        .required(),
+      dialogueList: Joi.array()
+        .items({
+          defaultLineId: Joi.number().required(),
+          startingLineId: Joi.number().required(),
+          lineIds: Joi.array().items(Joi.number()).required(),
+          optionIds: Joi.array().items(Joi.number()).required(),
+          conditionalFlag: Joi.string().allow("").default(""),
+          conditionalValue: Joi.string().required(),
+        })
+        .required(),
+      lineList: Joi.array()
+        .items({
+          prompt: Joi.string().required(),
+          conditionalFlag: Joi.string().allow("").default(""),
+          conditionalValue: Joi.string().required(),
+          triggeredFlag: Joi.string().allow("").default(""),
+          triggeredValue: Joi.string().required(),
+          nextLineId: Joi.number(),
+          optionIds: Joi.array().items(Joi.number()).required(),
+        })
+        .required(),
+      optionList: Joi.array()
+        .items({
+          prompt: Joi.string().required(),
+          nextLineId: Joi.number(),
+          triggeredFlag: Joi.string().allow("").default(""),
+          triggeredValue: Joi.string().required(),
+        })
+        .required(),
+      dialogueFlags: Joi.array().items(Joi.string().required()).required(),
+      mapAsset: Joi.string()
+        .regex(/^[0-9a-fA-F]{24}$/)
+        .required(),
+    }),
+  },
+  simulationAsset: {
+    create: Joi.object<ISimulationAsset>({
+      assetURL: Joi.string().required(),
+      assetFilename: Joi.string().required(),
+      assetVersion: Joi.number().min(0).required(),
     }),
   },
 };

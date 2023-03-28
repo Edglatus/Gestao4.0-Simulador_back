@@ -52,12 +52,12 @@ class FileController {
   async createFile(req: Request, res: Response) {
     try {
       const { bucketName } = req.params;
-      const file = req.files;
+      const { files } = req;
 
-      if (file) {
-        const newFiles = await FileManager.upload(file, bucketName);
+      if (files) {
+        const newFiles = await FileManager.upload(files, bucketName);
         return res.status(201).json({
-          ids: newFiles,
+          files: newFiles,
           message: "Success",
         });
       } else {

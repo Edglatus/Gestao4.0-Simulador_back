@@ -76,16 +76,8 @@ class ScenarioConttroller {
     return Scenario.findById(id)
       .populate([
         {
-          path: "startingLine",
-          select: "-createdAt -updatedAt -__v",
-        },
-        {
           path: "lineList",
           select: "-createdAt -updatedAt -__v",
-          populate: [
-            { path: "character", select: "-_id -createdAt -updatedAt -__v" },
-            { path: "options", select: "-createdAt -updatedAt -__v" },
-          ],
         },
         {
           path: "optionList",
@@ -97,10 +89,6 @@ class ScenarioConttroller {
         },
         {
           path: "negativeOutcome",
-          select: "-_id -createdAt -updatedAt -__v",
-        },
-        {
-          path: "characters",
           select: "-_id -createdAt -updatedAt -__v",
         },
       ])
@@ -138,20 +126,12 @@ class ScenarioConttroller {
     return Scenario.find()
       .populate([
         {
-          path: "startingLine",
-          select: "-_id -createdAt -updatedAt -__v",
-        },
-        {
           path: "lineList",
-          select: "-_id -createdAt -updatedAt -__v",
-          populate: [
-            { path: "character", select: "-_id -createdAt -updatedAt -__v" },
-            { path: "options", select: "-_id -createdAt -updatedAt -__v" },
-          ],
+          select: "-createdAt -updatedAt -__v",
         },
         {
           path: "optionList",
-          select: "-_id -createdAt -updatedAt -__v",
+          select: "-createdAt -updatedAt -__v",
         },
         {
           path: "positiveOutcome",
@@ -159,10 +139,6 @@ class ScenarioConttroller {
         },
         {
           path: "negativeOutcome",
-          select: "-_id -createdAt -updatedAt -__v",
-        },
-        {
-          path: "characters",
           select: "-_id -createdAt -updatedAt -__v",
         },
       ])
@@ -176,6 +152,9 @@ class ScenarioConttroller {
 
   async getScenariosPreview(req: Request, res: Response, next: NextFunction) {
     return Scenario.find()
+      .select(
+        "-startingLine -lineList -optionList -positiveOutcome -negativeOutcome -characters -createdAt -updatedAt -__v"
+      )
       .then((scenarios) => {
         res.status(200).json(scenarios);
       })

@@ -9,9 +9,11 @@ import quiz from "./quiz";
 import quizItems from "./quizItems";
 import scenarios from "./scenarios";
 import themes from "./themes";
+import simulations from "./simulations";
 
 export default (app: Express) => {
   healthCheck(app);
+  simulations(app);
   scenarios(app);
   quiz(app);
   quizItems(app);
