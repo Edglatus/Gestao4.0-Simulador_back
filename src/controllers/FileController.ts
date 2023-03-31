@@ -10,8 +10,11 @@ class FileController {
 
   async downloadFile(req: Request, res: Response) {
     try {
-      const { id, bucketName } = req.params;
+      const { id, bucketName, name } = req.params;
       const { fileName, path } = await FileManager.download(id, bucketName);
+      if (name !== fileName) {
+        throw new Error("Invalid id/name combination");
+      }
       return res.download(path, fileName, () => {
         if (existsSync(path)) {
           unlinkSync(path);
