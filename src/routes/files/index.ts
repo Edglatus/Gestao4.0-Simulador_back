@@ -8,6 +8,6 @@ export default (app: Express) => {
     .post(FileController.createFile);
   app.route("/files/:bucketName/id/:id").get(FileController.getFile);
   app
-    .route("/files/:bucketName/id/:id/download")
+    .route("/files/download/:bucketName/id/:id/name/:name")
     .get(FileController.downloadFile);
 };
