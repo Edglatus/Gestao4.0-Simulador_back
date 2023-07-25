@@ -134,6 +134,12 @@ class FileManager {
       .toArray();
     return files;
   }
+
+  async delete(id: string, bucketName: string) {
+    const _id = new ObjectId(id);
+    const bucket = await this.initializeBucket(bucketName);
+    return await bucket.delete(_id);
+  }
 }
 
 export default new FileManager();

@@ -16,7 +16,14 @@ const SimulationAssetSchema: Schema = new Schema(
   {
     assetURL: { type: String, required: true },
     assetFilename: { type: String, required: true },
-    assetVersion: { type: Number, required: true },
+    assetVersion: {
+      type: Number,
+      required: true,
+      validate: {
+        validator: Number.isInteger,
+        message: "'assetVersion' must be an integer value",
+      },
+    },
   },
   {
     timestamps: true,

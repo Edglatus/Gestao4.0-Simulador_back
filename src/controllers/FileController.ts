@@ -70,6 +70,16 @@ class FileController {
       return res.status(500).json({ message: error.message || error });
     }
   }
+
+  async deleteFile(req: Request, res: Response) {
+    try {
+      const { id, bucketName } = req.params;
+      await FileManager.delete(id, bucketName);
+      return res.json({ message: "Deleted!" });
+    } catch (error: any) {
+      return res.status(500).json({ message: error.message || error });
+    }
+  }
 }
 
 export default new FileController();
