@@ -85,11 +85,11 @@ class ScenarioConttroller {
         },
         {
           path: "positiveOutcome",
-          select: "-_id -createdAt -updatedAt -__v",
+          select: "-createdAt -updatedAt -__v",
         },
         {
           path: "negativeOutcome",
-          select: "-_id -createdAt -updatedAt -__v",
+          select: "-createdAt -updatedAt -__v",
         },
       ])
       .then((scenario) => {
@@ -135,11 +135,11 @@ class ScenarioConttroller {
         },
         {
           path: "positiveOutcome",
-          select: "-_id -createdAt -updatedAt -__v",
+          select: "-createdAt -updatedAt -__v",
         },
         {
           path: "negativeOutcome",
-          select: "-_id -createdAt -updatedAt -__v",
+          select: "-createdAt -updatedAt -__v",
         },
       ])
       .then((scenarios) => {
