@@ -50,6 +50,8 @@ class SimulationConttroller {
         triggeredFlag: simulation.lineList[index].triggeredFlag,
         triggeredValue: simulation.lineList[index].triggeredValue,
         optionIds,
+        animationFlag: simulation.lineList[index].animationFlag,
+        score: simulation.lineList[index].score,
       }).save();
       lineList.push(line._id);
     }
@@ -173,7 +175,7 @@ class SimulationConttroller {
     const { id } = req.params;
     return SimulationScenario.findById(id)
       .select(
-        "-mapAsset -characterList -dialogueList -lineList -optionList -createdAt -__v"
+        "-mapAsset -characterList -dialogueList -lineList -mainObjectiveFlagIndex -optionList -createdAt -__v"
       )
       .then((simulation) => {
         res.status(simulation ? 200 : 404).json(
@@ -226,7 +228,7 @@ class SimulationConttroller {
   async getSimulationsPreview(req: Request, res: Response, next: NextFunction) {
     return SimulationScenario.find()
       .select(
-        "-mapAsset -characterList -dialogueList -lineList -optionList -createdAt -__v"
+        "-mapAsset -characterList -dialogueList -lineList -mainObjectiveFlagIndex -optionList -createdAt -__v"
       )
       .then((simulation) => {
         res.status(200).json(simulation);

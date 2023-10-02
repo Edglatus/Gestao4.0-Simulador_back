@@ -9,6 +9,7 @@ export interface ISimulationScenario {
   dialogueList: Array<ObjectId>;
   lineList: Array<ObjectId>;
   optionList: Array<ObjectId>;
+  mainObjectiveFlagIndex: number;
 }
 
 export interface ISimulationScenarioModel
@@ -48,6 +49,10 @@ const SimulationScenarioSchema: Schema = new Schema(
       type: [Schema.Types.ObjectId],
       required: true,
       ref: "simulationOptions",
+    },
+    mainObjectiveFlagIndex: {
+      type: Number,
+      required: true,
     },
   },
   {

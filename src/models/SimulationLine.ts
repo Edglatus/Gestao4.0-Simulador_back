@@ -8,6 +8,8 @@ export interface ISimulationLine {
   conditionalValue: boolean;
   triggeredFlag?: string;
   triggeredValue: boolean;
+  animationFlag: string;
+  score: number;
 }
 
 export interface ISimulationLineModel extends ISimulationLine, Document {
@@ -32,6 +34,8 @@ const SimulationLineSchema: Schema = new Schema(
     conditionalValue: { type: Boolean, required: true },
     triggeredFlag: { type: String, default: "" },
     triggeredValue: { type: Boolean, required: true },
+    animationFlag: { type: String, required: false },
+    score: { type: Number, required: false },
   },
   {
     timestamps: true,
