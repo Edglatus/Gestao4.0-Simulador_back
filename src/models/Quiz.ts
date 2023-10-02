@@ -5,6 +5,7 @@ export interface IQuiz {
   itemList: Array<ObjectId>;
   difficulty: number;
   description: string;
+  backgroundURL: string;
 }
 
 export interface IQuizModel extends IQuiz, Document {
@@ -23,6 +24,7 @@ const QuizSchema: Schema = new Schema(
     },
     difficulty: { type: Number, required: true },
     description: { type: String, required: true },
+    backgroundURL: { type: String, required: false },
   },
   {
     timestamps: true,

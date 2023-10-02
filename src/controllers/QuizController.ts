@@ -93,6 +93,9 @@ class QuizController {
           quantity: {
             $sum: "$itemList.list.quantity",
           },
+          updatedAt: 1,
+          createdAt: 1,
+          backgroundURL: 1,
         },
       },
       {
@@ -128,7 +131,7 @@ class QuizController {
   async getQuizPreview(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
     return Quiz.findById(id)
-      .select("-itemList -createdAt -__v")
+      .select("-itemList -createdAt -backgroundURL -__v")
       .then((quiz) => {
         res.status(quiz ? 200 : 404).json(
           quiz ?? {
@@ -209,6 +212,9 @@ class QuizController {
           quantity: {
             $sum: "$itemList.list.quantity",
           },
+          updatedAt: 1,
+          createdAt: 1,
+          backgroundURL: 1,
         },
       },
       {
@@ -286,7 +292,7 @@ class QuizController {
           quantity: {
             $sum: "$itemList.list.quantity",
           },
-          _updatedAt: 1,
+          updatedAt: 1,
         },
       },
     ])
