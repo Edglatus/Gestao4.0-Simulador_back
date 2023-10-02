@@ -108,7 +108,7 @@ class ScenarioConttroller {
     const { id } = req.params;
     return Scenario.findById(id)
       .select(
-        "-startingLine -lineList -optionList -positiveOutcome -negativeOutcome -characters -createdAt -updatedAt -__v"
+        "-startingLine -lineList -optionList -positiveOutcome -negativeOutcome -characters -createdAt -__v"
       )
       .then((scenario) => {
         res.status(scenario ? 200 : 404).json(

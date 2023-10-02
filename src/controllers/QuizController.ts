@@ -128,7 +128,7 @@ class QuizController {
   async getQuizPreview(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
     return Quiz.findById(id)
-      .select("-itemList -createdAt -updatedAt -__v")
+      .select("-itemList -createdAt -__v")
       .then((quiz) => {
         res.status(quiz ? 200 : 404).json(
           quiz ?? {

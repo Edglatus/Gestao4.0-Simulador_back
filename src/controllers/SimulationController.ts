@@ -173,7 +173,7 @@ class SimulationConttroller {
     const { id } = req.params;
     return SimulationScenario.findById(id)
       .select(
-        "-mapAsset -characterList -dialogueList -lineList -optionList -createdAt -updatedAt -__v"
+        "-mapAsset -characterList -dialogueList -lineList -optionList -createdAt -__v"
       )
       .then((simulation) => {
         res.status(simulation ? 200 : 404).json(
