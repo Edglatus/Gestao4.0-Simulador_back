@@ -153,7 +153,7 @@ class ScenarioConttroller {
   async getScenariosPreview(req: Request, res: Response, next: NextFunction) {
     return Scenario.find()
       .select(
-        "-startingLine -lineList -optionList -positiveOutcome -negativeOutcome -characters -createdAt -updatedAt -__v"
+        "-startingLine -lineList -optionList -positiveOutcome -negativeOutcome -characters -createdAt -__v"
       )
       .then((scenarios) => {
         res.status(200).json(scenarios);

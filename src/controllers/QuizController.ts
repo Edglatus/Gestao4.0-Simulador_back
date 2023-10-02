@@ -286,6 +286,7 @@ class QuizController {
           quantity: {
             $sum: "$itemList.list.quantity",
           },
+          _updatedAt: 1,
         },
       },
     ])

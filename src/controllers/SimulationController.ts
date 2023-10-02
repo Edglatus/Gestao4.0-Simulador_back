@@ -226,7 +226,7 @@ class SimulationConttroller {
   async getSimulationsPreview(req: Request, res: Response, next: NextFunction) {
     return SimulationScenario.find()
       .select(
-        "-mapAsset -characterList -dialogueList -lineList -optionList -createdAt -updatedAt -__v"
+        "-mapAsset -characterList -dialogueList -lineList -optionList -createdAt -__v"
       )
       .then((simulation) => {
         res.status(200).json(simulation);
