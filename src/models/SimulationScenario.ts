@@ -11,6 +11,7 @@ export interface ISimulationScenario {
   optionList: Array<ObjectId>;
   mainObjectiveFlagIndex: number;
   mapAssetIndex: number;
+  artifactList: Array<ObjectId>;
 }
 
 export interface ISimulationScenarioModel
@@ -58,6 +59,11 @@ const SimulationScenarioSchema: Schema = new Schema(
     mapAssetIndex: {
       type: Number,
       required: true,
+    },
+    artifactList: {
+      type: [Schema.Types.ObjectId],
+      required: true,
+      ref: "simulationArtifacts",
     },
   },
   {

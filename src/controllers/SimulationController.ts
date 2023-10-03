@@ -6,6 +6,7 @@ import SimulationDialogue from "../models/SimulationDialogue";
 import SimulationLine from "../models/SimulationLine";
 import SimulationOption from "../models/SimulationOption";
 import SimulationScenario from "../models/SimulationScenario";
+import SimulationArtifact from "../models/SimulationArtifact";
 
 class SimulationConttroller {
   async createSimulationAsset(req: Request, res: Response, next: NextFunction) {
@@ -28,6 +29,17 @@ class SimulationConttroller {
     const optionList = [];
     const dialogueList = [];
     const characterList = [];
+    const artifactList = [];
+
+    for (let index = 0; index < simulation.artifactList.length; index++) {
+      const option = await new SimulationArtifact({
+        artifactName: simulation.optionList[index].artifactName,
+        imageURL: simulation.optionList[index].imageURL,
+        description: simulation.optionList[index].description,
+        category: simulation.optionList[index].category,
+      }).save();
+      artifactList.push(option._id);
+    }
 
     for (let index = 0; index < simulation.optionList.length; index++) {
       const option = await new SimulationOption({
@@ -52,6 +64,8 @@ class SimulationConttroller {
         optionIds,
         animationFlag: simulation.lineList[index].animationFlag,
         score: simulation.lineList[index].score,
+        addedArtifact: artifactList[simulation.lineList[index].addedArtifact],
+        //addedArtifact: simulation.lineList[index].addedArtifact,
       }).save();
       lineList.push(line._id);
     }
@@ -116,6 +130,7 @@ class SimulationConttroller {
       dialogueList,
       lineList,
       optionList,
+      artifactList,
     });
     return newSimulation
       .save()
