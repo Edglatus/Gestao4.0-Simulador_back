@@ -134,10 +134,10 @@ class SimulationConttroller {
     }
     return SimulationScenario.findById(id)
       .populate([
-        {
-          path: "mapAsset",
-          select: "-_id -createdAt -updatedAt -__v",
-        },
+        // {
+        //   path: "mapAsset",
+        //   select: "-_id -createdAt -updatedAt -__v",
+        // },
         {
           path: "characterList",
           select: "-createdAt -updatedAt -__v",
@@ -175,7 +175,8 @@ class SimulationConttroller {
     const { id } = req.params;
     return SimulationScenario.findById(id)
       .select(
-        "-mapAsset -characterList -dialogueList -lineList -mainObjectiveFlagIndex -optionList -createdAt -__v"
+        //"-mapAsset -characterList -dialogueList -lineList -mainObjectiveFlagIndex -optionList -createdAt -__v"
+        "-mapAssetIndex -characterList -dialogueList -lineList -mainObjectiveFlagIndex -optionList -createdAt -__v"
       )
       .then((simulation) => {
         res.status(simulation ? 200 : 404).json(
@@ -192,10 +193,10 @@ class SimulationConttroller {
   async getSimulations(req: Request, res: Response, next: NextFunction) {
     return SimulationScenario.find()
       .populate([
-        {
-          path: "mapAsset",
-          select: "-_id -createdAt -updatedAt -__v",
-        },
+        // {
+        //   path: "mapAsset",
+        //   select: "-_id -createdAt -updatedAt -__v",
+        // },
         {
           path: "characterList",
           select: "-createdAt -updatedAt -__v",
@@ -228,7 +229,8 @@ class SimulationConttroller {
   async getSimulationsPreview(req: Request, res: Response, next: NextFunction) {
     return SimulationScenario.find()
       .select(
-        "-mapAsset -characterList -dialogueList -lineList -mainObjectiveFlagIndex -optionList -createdAt -__v"
+        //"-mapAsset -characterList -dialogueList -lineList -mainObjectiveFlagIndex -optionList -createdAt -__v"
+        "-mapAssetIndex -characterList -dialogueList -lineList -mainObjectiveFlagIndex -optionList -createdAt -__v"
       )
       .then((simulation) => {
         res.status(200).json(simulation);

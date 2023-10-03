@@ -4,12 +4,13 @@ export interface ISimulationScenario {
   title: string;
   description: string;
   dialogueFlags: Array<string>;
-  mapAsset: ObjectId;
+  // mapAsset: ObjectId;
   characterList: Array<ObjectId>;
   dialogueList: Array<ObjectId>;
   lineList: Array<ObjectId>;
   optionList: Array<ObjectId>;
   mainObjectiveFlagIndex: number;
+  mapAssetIndex: number;
 }
 
 export interface ISimulationScenarioModel
@@ -25,11 +26,11 @@ const SimulationScenarioSchema: Schema = new Schema(
     title: { type: String, required: true },
     description: { type: String, required: true },
     dialogueFlags: { type: [String], required: true },
-    mapAsset: {
-      type: Schema.Types.ObjectId,
-      required: true,
-      ref: "simulationAssets",
-    },
+    // mapAsset: {
+    //   type: Schema.Types.ObjectId,
+    //   required: true,
+    //   ref: "simulationAssets",
+    // },
     characterList: {
       type: [Schema.Types.ObjectId],
       required: true,
@@ -51,6 +52,10 @@ const SimulationScenarioSchema: Schema = new Schema(
       ref: "simulationOptions",
     },
     mainObjectiveFlagIndex: {
+      type: Number,
+      required: true,
+    },
+    mapAssetIndex: {
       type: Number,
       required: true,
     },

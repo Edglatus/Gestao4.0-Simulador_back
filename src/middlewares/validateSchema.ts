@@ -178,9 +178,9 @@ export const schemas = {
         })
         .required(),
       dialogueFlags: Joi.array().items(Joi.string().required()).required(),
-      mapAsset: Joi.string()
-        .regex(/^[0-9a-fA-F]{24}$/)
-        .required(),
+      // mapAsset: Joi.string()
+      //   .regex(/^[0-9a-fA-F]{24}$/)
+      //   .required(),
     }),
   },
   simulationAsset: {
