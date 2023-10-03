@@ -173,6 +173,10 @@ class SimulationConttroller {
           path: "optionList",
           select: "-createdAt -updatedAt -__v",
         },
+        {
+          path: "artifactList",
+          select: "-createdAt -updatedAt -__v",
+        },
       ])
       .then((simulation) => {
         res.status(simulation ? 200 : 404).json(
@@ -191,7 +195,7 @@ class SimulationConttroller {
     return SimulationScenario.findById(id)
       .select(
         //"-mapAsset -characterList -dialogueList -lineList -mainObjectiveFlagIndex -optionList -createdAt -__v"
-        "-mapAssetIndex -characterList -dialogueList -lineList -mainObjectiveFlagIndex -optionList -createdAt -__v"
+        "-mapAssetIndex -characterList -dialogueList -lineList -artifactList -mainObjectiveFlagIndex -optionList -createdAt -__v"
       )
       .then((simulation) => {
         res.status(simulation ? 200 : 404).json(
@@ -232,6 +236,10 @@ class SimulationConttroller {
           path: "optionList",
           select: "-createdAt -updatedAt -__v",
         },
+        {
+          path: "artifactList",
+          select: "-createdAt -updatedAt -__v",
+        },
       ])
       .then((simulation) => {
         res.status(200).json(simulation);
@@ -245,7 +253,7 @@ class SimulationConttroller {
     return SimulationScenario.find()
       .select(
         //"-mapAsset -characterList -dialogueList -lineList -mainObjectiveFlagIndex -optionList -createdAt -__v"
-        "-mapAssetIndex -characterList -dialogueList -lineList -mainObjectiveFlagIndex -optionList -createdAt -__v"
+        "-mapAssetIndex -characterList -dialogueList -lineList -artifactList -mainObjectiveFlagIndex -optionList -createdAt -__v"
       )
       .then((simulation) => {
         res.status(200).json(simulation);
