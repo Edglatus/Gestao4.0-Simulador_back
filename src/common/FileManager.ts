@@ -14,8 +14,11 @@ import { GridFSBucket, ObjectId } from "mongodb";
 class FileManager {
   private directory: string;
   private buckets: Array<string> = [
+    "quizBackgrounds",
+    "scnBackgrounds",
     "questionsImages",
     "portraitImages",
+    "artifactImages",
     "assetFiles",
   ];
 
