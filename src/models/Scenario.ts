@@ -9,7 +9,7 @@ export interface IScenario {
   positiveOutcome: ObjectId;
   negativeOutcome: ObjectId;
   characters: Array<ObjectId>;
-  backgroundURL: string;
+  backgroundURL: ObjectId;
 }
 
 export interface IScenarioModel extends IScenario, Document {
@@ -52,7 +52,7 @@ const ScenarioSchema: Schema = new Schema(
       required: true,
       ref: "characters",
     },
-    backgroundURL: { type: String, required: true },
+    backgroundURL: { type: Schema.Types.ObjectId, required: true },
   },
   {
     timestamps: true,

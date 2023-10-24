@@ -38,6 +38,7 @@ export const schemas = {
         .required(),
       difficulty: Joi.number().required(),
       description: Joi.string().required(),
+      backgroundIndex: Joi.number().required(),
     }),
   },
   quizItem: {
@@ -128,7 +129,7 @@ export const schemas = {
             .required()
         )
         .required(),
-      backgroundURL: Joi.string().required(),
+      backgroundIndex: Joi.number().required(),
     }),
   },
   simulation: {
@@ -143,9 +144,9 @@ export const schemas = {
           defaultDialogueId: Joi.number().required(),
           mapLocationIndex: Joi.number().required(),
           dialogueIds: Joi.array().items(Joi.number()).required(),
-          prefabAsset: Joi.string()
-            .regex(/^[0-9a-fA-F]{24}$/)
-            .required(),
+          // prefabAsset: Joi.string()
+          //   .regex(/^[0-9a-fA-F]{24}$/)
+          //   .required(),
         })
         .required(),
       dialogueList: Joi.array()
