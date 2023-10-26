@@ -23,7 +23,7 @@ class FileManager {
   ];
 
   constructor() {
-    this.directory = join("/", "tmp", "temp");
+    this.directory = join(process.cwd(), "/", "tmp");
     if (!existsSync(this.directory)) {
       mkdirSync(this.directory);
     }
