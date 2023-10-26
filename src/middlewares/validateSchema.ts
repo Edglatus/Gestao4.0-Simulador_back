@@ -38,7 +38,7 @@ export const schemas = {
         .required(),
       difficulty: Joi.number().required(),
       description: Joi.string().required(),
-      backgroundIndex: Joi.number().required(),
+      backgroundURL: Joi.string().required(),
     }),
   },
   quizItem: {
@@ -129,7 +129,7 @@ export const schemas = {
             .required()
         )
         .required(),
-      backgroundIndex: Joi.number().required(),
+      backgroundURL: Joi.string().required(),
     }),
   },
   simulation: {
