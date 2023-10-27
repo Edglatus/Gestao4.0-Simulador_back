@@ -2,6 +2,7 @@ import mongoose, { Document, ObjectId, Schema } from "mongoose";
 
 export interface ICharacter {
   name: string;
+  role: string;
   portrait: ObjectId;
 }
 
@@ -14,6 +15,7 @@ export interface ICharacterModel extends ICharacter, Document {
 const CharacterSchema: Schema = new Schema(
   {
     name: { type: String, required: true },
+    role: { type: String, required: true },
     portrait: { type: Schema.Types.ObjectId, required: true },
   },
   {

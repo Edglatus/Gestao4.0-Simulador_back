@@ -1,10 +1,18 @@
 import { Request, Response, NextFunction } from "express";
 import Character from "../models/Character";
+import FileManager from "../common/FileManager";
 
 class CharacterController {
   async createCharacter(req: Request, res: Response, next: NextFunction) {
-    const character = new Character(req.body);
-    return character
+    const character = JSON.parse(req.body.character);
+
+    if(req.files) {
+      const upload = await FileManager.upload(req.files, "portraitImages");
+      character.portrait = upload[0].id;
+    }
+
+    const newCharacter = new Character(character);
+    return newCharacter
       .save()
       .then((character) => {
         res.status(201).json(character);

@@ -1,4 +1,4 @@
-import Joi, { ObjectSchema } from "joi";
+import Joi, { CoerceResult, ObjectSchema } from "joi";
 import { Request, Response, NextFunction } from "express";
 import Logging from "../library/Logging";
 import { IQuestion } from "../models/Question";
@@ -12,6 +12,28 @@ import { IScenarioOption } from "../models/ScenarioOption";
 import { IScenarioOutcome } from "../models/ScenarioOutcome";
 import { ISimulationScenario } from "../models/SimulationScenario";
 import { ISimulationAsset } from "../models/SimulationAsset";
+
+const custom = Joi.extend({
+    type: 'object',
+    base: Joi.object(),
+    coerce: {  
+      method(value, schema): CoerceResult {
+
+        if (value[0] !== '{' &&
+          !/^\s*\{/.test(value)) {
+          return {value: undefined};
+        }
+
+        try {
+          return { value: JSON.parse(value) };
+        }
+        catch (err) {
+          console.log(err);
+          return {value: undefined};
+        }
+      }
+    }
+  });
 
 export const validateSchema = (schema: ObjectSchema) => {
   return async (req: Request, res: Response, next: NextFunction) => {
@@ -27,26 +49,21 @@ export const validateSchema = (schema: ObjectSchema) => {
 
 export const schemas = {
   quiz: {
-    create: Joi.object<IQuiz>({
-      title: Joi.string().required(),
-      itemList: Joi.array()
-        .items(
-          Joi.string()
-            .regex(/^[0-9a-fA-F]{24}$/)
-            .required()
-        )
-        .required(),
-      difficulty: Joi.number().required(),
-      description: Joi.string().required(),
-      backgroundURL: Joi.string().required(),
-    }),
+    create: custom.object().keys(
+      {
+        quiz: Joi.object().keys({
+          title: Joi.string().required(),
+          itemList: Joi.array().required(),
+          difficulty: Joi.number().required(),
+          description: Joi.string().required(),
+          backgroundURL: Joi.string().required(),
+        })
+      }),
   },
   quizItem: {
     create: Joi.object<IQuizItem>({
       description: Joi.string().required(),
-      list: Joi.string()
-        .regex(/^[0-9a-fA-F]{24}$/)
-        .required(),
+      list: Joi.object().required(),
       requiredHits: Joi.number().required(),
     }),
   },
@@ -54,13 +71,7 @@ export const schemas = {
     create: Joi.object<IList>({
       title: Joi.string().required(),
       description: Joi.string().required(),
-      questions: Joi.array()
-        .items(
-          Joi.string()
-            .regex(/^[0-9a-fA-F]{24}$/)
-            .required()
-        )
-        .required(),
+      questions: Joi.array().required(),
     }),
   },
   question: {
@@ -92,12 +103,16 @@ export const schemas = {
     }),
   },
   character: {
-    create: Joi.object<ICharacter>({
-      name: Joi.string().required(),
-      portrait: Joi.string()
-        .regex(/^[0-9a-fA-F]{24}$/)
-        .required(),
-    }),
+    create: custom.object().keys(
+      {
+        character: Joi.object<ICharacter>({
+          name: Joi.string().required(),
+          role: Joi.string().required(),
+        // portrait: Joi.string()
+        //   .regex(/^[0-9a-fA-F]{24}$/)
+        //   .required(),
+        }),
+      }),
   },
   scenario: {
     create: Joi.object<IScenario>({
