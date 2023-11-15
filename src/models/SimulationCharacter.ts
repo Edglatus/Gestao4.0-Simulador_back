@@ -5,12 +5,12 @@ export interface ISimulationCharacter {
   defaultDialogueId: ObjectId;
   dialogueIds: Array<ObjectId>;
   mapLocationIndex: number;
-  prefabAsset: ObjectId;
+  // prefabAsset: ObjectId;
 }
 
 export interface ISimulationCharacterModel
   extends ISimulationCharacter,
-    Document {
+  Document {
   _id: ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -34,11 +34,11 @@ const SimulationCharacterSchema: Schema = new Schema(
       ref: "simulationDialogues",
     },
     mapLocationIndex: { type: Number, required: true },
-    prefabAsset: {
-      type: Schema.Types.ObjectId,
-      required: true,
-      ref: "simulationAssets",
-    },
+    // prefabAsset: {
+    //   type: Schema.Types.ObjectId,
+    //   required: true,
+    //   ref: "simulationAssets",
+    // },
   },
   {
     timestamps: true,

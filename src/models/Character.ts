@@ -4,6 +4,7 @@ export interface ICharacter {
   name: string;
   role: string;
   portrait: ObjectId;
+  assetIndex: number;
 }
 
 export interface ICharacterModel extends ICharacter, Document {
@@ -17,6 +18,7 @@ const CharacterSchema: Schema = new Schema(
     name: { type: String, required: true },
     role: { type: String, required: true },
     portrait: { type: Schema.Types.ObjectId, required: true },
+    assetIndex: { type: Number, required: true },
   },
   {
     timestamps: true,

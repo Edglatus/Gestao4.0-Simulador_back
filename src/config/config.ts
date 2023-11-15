@@ -15,7 +15,7 @@ const MONGO_DATABASE = (USE_LOCAL_MONGO) ? `test` : process.env.MONGO_DATABASE |
 const MONGO_URL = (USE_LOCAL_MONGO) ?
   `mongodb://${MONGO_HOST}` :
   `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}/${MONGO_DATABASE}?retryWrites=true&w=majority`
-;
+  ;
 
 console.log(MONGO_URL);
 

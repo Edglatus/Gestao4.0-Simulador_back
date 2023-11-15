@@ -14,26 +14,26 @@ import { ISimulationScenario } from "../models/SimulationScenario";
 import { ISimulationAsset } from "../models/SimulationAsset";
 
 const custom = Joi.extend({
-    type: 'object',
-    base: Joi.object(),
-    coerce: {  
-      method(value, schema): CoerceResult {
+  type: 'object',
+  base: Joi.object(),
+  coerce: {
+    method(value, schema): CoerceResult {
 
-        if (value[0] !== '{' &&
-          !/^\s*\{/.test(value)) {
-          return {value: undefined};
-        }
+      if (value[0] !== '{' &&
+        !/^\s*\{/.test(value)) {
+        return { value: undefined };
+      }
 
-        try {
-          return { value: JSON.parse(value) };
-        }
-        catch (err) {
-          console.log(err);
-          return {value: undefined};
-        }
+      try {
+        return { value: JSON.parse(value) };
+      }
+      catch (err) {
+        console.log(err);
+        return { value: undefined };
       }
     }
-  });
+  }
+});
 
 export const validateSchema = (schema: ObjectSchema) => {
   return async (req: Request, res: Response, next: NextFunction) => {
@@ -108,9 +108,10 @@ export const schemas = {
         character: Joi.object<ICharacter>({
           name: Joi.string().required(),
           role: Joi.string().required(),
-        // portrait: Joi.string()
-        //   .regex(/^[0-9a-fA-F]{24}$/)
-        //   .required(),
+          assetIndex: Joi.number().required(),
+          // portrait: Joi.string()
+          //   .regex(/^[0-9a-fA-F]{24}$/)
+          //   .required(),
         }),
       }),
   },
@@ -189,6 +190,7 @@ export const schemas = {
         .items({
           prompt: Joi.string().required(),
           nextLineId: Joi.number(),
+          score: Joi.number().required(),
           triggeredFlag: Joi.string().allow("").default(""),
           triggeredValue: Joi.string().required(),
         })

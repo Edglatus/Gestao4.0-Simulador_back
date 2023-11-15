@@ -9,7 +9,6 @@ export interface ISimulationLine {
   triggeredFlag?: string;
   triggeredValue: boolean;
   animationFlag: string;
-  score: number;
   addedArtifact: ObjectId;
 }
 
@@ -36,7 +35,6 @@ const SimulationLineSchema: Schema = new Schema(
     triggeredFlag: { type: String, default: "" },
     triggeredValue: { type: Boolean, required: true },
     animationFlag: { type: String, required: true },
-    score: { type: Number, required: true },
     addedArtifact: {
       type: Schema.Types.ObjectId,
       required: true,
