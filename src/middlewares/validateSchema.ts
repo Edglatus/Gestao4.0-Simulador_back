@@ -131,7 +131,7 @@ export const schemas = {
         .required(),
       optionList: Joi.array()
         .items({
-          prompt: Joi.string().required(),
+          prompt: Joi.string().allow("").default(""),
           nextLine: Joi.number(),
           value: Joi.number().min(-1).max(1).required(),
         })

@@ -26,7 +26,7 @@ class SimulationConttroller {
   }
 
   async createSimulation(req: Request, res: Response, next: NextFunction) {
-    const simulation: ApiSimulation = req.body;
+    const simulation: ApiSimulation = req.body.simulation;
     const lineList = [];
     const optionList = [];
     const dialogueList = [];
@@ -36,7 +36,7 @@ class SimulationConttroller {
     let uploadedFiles;
 
     if (req.files) {
-      uploadedFiles = await FileManager.upload(req.files, "questionsImages");
+      uploadedFiles = await FileManager.upload(req.files, "artifactImages");
     }
 
     if (uploadedFiles === undefined || simulation.artifactList.length > uploadedFiles.length)

@@ -33,8 +33,8 @@ class ScenarioConttroller {
     }
 
     for (let i = 0; i < scenario.optionList.length; i++) {
-      if (scenario.optionList[i].nextLineIndex !== undefined) {
-        const index = scenario.optionList[i].nextLineIndex;
+      if (scenario.optionList[i].nextLine !== undefined) {
+        const index = scenario.optionList[i].nextLine;
 
         if (index !== undefined)
           await ScenarioOption.updateOne(

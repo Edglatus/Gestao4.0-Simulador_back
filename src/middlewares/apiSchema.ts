@@ -50,7 +50,7 @@ export interface ScenarioLine {
 }
 export interface ScenarioOption {
     prompt: string;
-    nextLineIndex?: number;
+    nextLine?: number;
     value: number;
 }
 export interface ScenarioOutcome {
