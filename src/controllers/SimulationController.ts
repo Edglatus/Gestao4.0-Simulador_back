@@ -7,6 +7,8 @@ import SimulationLine from "../models/SimulationLine";
 import SimulationOption from "../models/SimulationOption";
 import SimulationScenario from "../models/SimulationScenario";
 import SimulationArtifact from "../models/SimulationArtifact";
+import { ApiSimulation } from "../middlewares/apiSchema";
+import FileManager from "../common/FileManager";
 
 class SimulationConttroller {
   async createSimulationAsset(req: Request, res: Response, next: NextFunction) {
@@ -24,21 +26,30 @@ class SimulationConttroller {
   }
 
   async createSimulation(req: Request, res: Response, next: NextFunction) {
-    const simulation = req.body;
+    const simulation: ApiSimulation = req.body;
     const lineList = [];
     const optionList = [];
     const dialogueList = [];
     const characterList = [];
     const artifactList = [];
 
+    let uploadedFiles;
+
+    if (req.files) {
+      uploadedFiles = await FileManager.upload(req.files, "questionsImages");
+    }
+
+    if (uploadedFiles === undefined || simulation.artifactList.length > uploadedFiles.length)
+      throw new Error("Could not find required artifact files");
+
     for (let index = 0; index < simulation.artifactList.length; index++) {
-      const option = await new SimulationArtifact({
-        artifactName: simulation.optionList[index].artifactName,
-        imageURL: simulation.optionList[index].imageURL,
-        description: simulation.optionList[index].description,
-        category: simulation.optionList[index].category,
+      const artifact = await new SimulationArtifact({
+        artifactName: simulation.artifactList[index].artifactName,
+        imageURL: uploadedFiles[simulation.artifactList[index].imageIndex],
+        description: simulation.artifactList[index].description,
+        category: simulation.artifactList[index].category,
       }).save();
-      artifactList.push(option._id);
+      artifactList.push(artifact._id);
     }
 
     for (let index = 0; index < simulation.optionList.length; index++) {
@@ -46,6 +57,7 @@ class SimulationConttroller {
         prompt: simulation.optionList[index].prompt,
         triggeredFlag: simulation.optionList[index].triggeredFlag,
         triggeredValue: simulation.optionList[index].triggeredValue,
+        score: simulation.optionList[index].score,
       }).save();
       optionList.push(option._id);
     }
@@ -63,7 +75,6 @@ class SimulationConttroller {
         triggeredValue: simulation.lineList[index].triggeredValue,
         optionIds,
         animationFlag: simulation.lineList[index].animationFlag,
-        score: simulation.lineList[index].score,
         addedArtifact: artifactList[simulation.lineList[index].addedArtifact],
         //addedArtifact: simulation.lineList[index].addedArtifact,
       }).save();
@@ -71,28 +82,31 @@ class SimulationConttroller {
     }
 
     for (let index = 0; index < simulation.optionList.length; index++) {
-      if (simulation.optionList[index].nextLineId) {
+      if (simulation.optionList[index].nextLineIndex) {
         await SimulationOption.updateOne(
           { _id: optionList[index] },
           {
             $set: {
-              nextLineId: lineList[simulation.optionList[index].nextLineId],
+              nextLineId: lineList[simulation.optionList[index].nextLineIndex],
             },
           }
         );
       }
     }
 
-    for (let index = 0; index < simulation.lineList.length; index++) {
-      if (simulation.lineList[index].nextLineId) {
-        await SimulationLine.updateOne(
-          { _id: lineList[index] },
-          {
-            $set: {
-              nextLineId: lineList[simulation.lineList[index].nextLineId],
-            },
-          }
-        );
+    for (let i = 0; i < simulation.lineList.length; i++) {
+      if (simulation.lineList[i].nextLineIndex) {
+        const index = simulation.lineList[i].nextLineIndex;
+
+        if (index !== undefined)
+          await SimulationLine.updateOne(
+            { _id: lineList[i] },
+            {
+              $set: {
+                nextLineId: lineList[index],
+              },
+            }
+          );
       }
     }
 

@@ -6,12 +6,13 @@ import Question from "../models/Question";
 import List from "../models/List";
 import QuizItem from "../models/QuizItem";
 import FileManager from "../common/FileManager";
+import { ApiQuiz } from "../middlewares/apiSchema";
 
 class QuizController {
   async createQuiz(req: Request, res: Response, next: NextFunction) {
     try {
 
-      const quiz = JSON.parse(req.body.quiz);
+      const quiz: ApiQuiz = JSON.parse(req.body.quiz);
       
       let uploadedFiles;
       

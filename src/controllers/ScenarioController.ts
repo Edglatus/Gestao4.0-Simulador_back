@@ -4,10 +4,11 @@ import Scenario from "../models/Scenario";
 import ScenarioLine from "../models/ScenarioLine";
 import ScenarioOption from "../models/ScenarioOption";
 import ScenarioOutcome from "../models/ScenarioOutcome";
+import { ApiScenario } from "../middlewares/apiSchema";
 
 class ScenarioConttroller {
   async createScenario(req: Request, res: Response, next: NextFunction) {
-    const scenario = req.body;
+    const scenario: ApiScenario = req.body;
     const lineList = [];
     const optionList = [];
 
@@ -31,16 +32,19 @@ class ScenarioConttroller {
       lineList.push(line._id);
     }
 
-    for (let index = 0; index < scenario.optionList.length; index++) {
-      if (scenario.optionList[index].nextLine) {
-        await ScenarioOption.updateOne(
-          { _id: optionList[index] },
-          {
-            $set: {
-              nextLine: lineList[scenario.optionList[index].nextLine],
-            },
-          }
-        );
+    for (let i = 0; i < scenario.optionList.length; i++) {
+      if (scenario.optionList[i].nextLineIndex !== undefined) {
+        const index = scenario.optionList[i].nextLineIndex;
+
+        if (index !== undefined)
+          await ScenarioOption.updateOne(
+            { _id: optionList[i] },
+            {
+              $set: {
+                nextLine: lineList[index],
+              },
+            }
+          );
       }
     }
 
