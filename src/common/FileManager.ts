@@ -25,12 +25,15 @@ class FileManager {
   constructor() {
     try {
       this.directory = join("/", "tmp", "temp");
+      if (!existsSync(this.directory)) {
+        mkdirSync(this.directory);
+      }
     }
     catch {
       this.directory = join(process.cwd(), "/", "tmp");
-    }
-    if (!existsSync(this.directory)) {
-      mkdirSync(this.directory);
+      if (!existsSync(this.directory)) {
+        mkdirSync(this.directory);
+      }
     }
   }
 
