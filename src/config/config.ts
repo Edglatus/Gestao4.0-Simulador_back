@@ -17,7 +17,7 @@ const MONGO_URL = (USE_LOCAL_MONGO) ?
   `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}/${MONGO_DATABASE}?retryWrites=true&w=majority`
   ;
 
-console.log(MONGO_URL);
+// console.log(MONGO_URL);
 
 const options: ConnectOptions = {
   dbName: MONGO_DATABASE,
