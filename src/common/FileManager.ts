@@ -14,13 +14,16 @@ import { GridFSBucket, ObjectId } from "mongodb";
 class FileManager {
   private directory: string;
   private buckets: Array<string> = [
+    "quizBackgrounds",
+    "scnBackgrounds",
     "questionsImages",
     "portraitImages",
+    "artifactImages",
     "assetFiles",
   ];
 
   constructor() {
-    this.directory = join("/", "tmp", "temp");
+    this.directory = join(process.cwd(), "/", "tmp");
     if (!existsSync(this.directory)) {
       mkdirSync(this.directory);
     }

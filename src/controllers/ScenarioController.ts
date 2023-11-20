@@ -4,68 +4,77 @@ import Scenario from "../models/Scenario";
 import ScenarioLine from "../models/ScenarioLine";
 import ScenarioOption from "../models/ScenarioOption";
 import ScenarioOutcome from "../models/ScenarioOutcome";
+import { ApiScenario } from "../middlewares/apiSchema";
 
 class ScenarioConttroller {
   async createScenario(req: Request, res: Response, next: NextFunction) {
-    const scenario = req.body;
-    const lineList = [];
-    const optionList = [];
+    try {
+      const scenario: ApiScenario = req.body;
+      const lineList = [];
+      const optionList = [];
 
-    for (let index = 0; index < scenario.optionList.length; index++) {
-      const option = await new ScenarioOption({
-        prompt: scenario.optionList[index].prompt,
-        value: scenario.optionList[index].value,
-      }).save();
-      optionList.push(option._id);
-    }
-
-    for (let index = 0; index < scenario.lineList.length; index++) {
-      const options = [];
-      for (let j = 0; j < scenario.lineList[index].options.length; j++) {
-        options.push(optionList[scenario.lineList[index].options[j]]);
+      for (let index = 0; index < scenario.optionList.length; index++) {
+        const option = await new ScenarioOption({
+          prompt: scenario.optionList[index].prompt,
+          value: scenario.optionList[index].value,
+        }).save();
+        optionList.push(option._id);
       }
-      const line = await new ScenarioLine({
-        ...scenario.lineList[index],
-        options,
-      }).save();
-      lineList.push(line._id);
-    }
 
-    for (let index = 0; index < scenario.optionList.length; index++) {
-      if (scenario.optionList[index].nextLine) {
-        await ScenarioOption.updateOne(
-          { _id: optionList[index] },
-          {
-            $set: {
-              nextLine: lineList[scenario.optionList[index].nextLine],
-            },
-          }
-        );
+      for (let index = 0; index < scenario.lineList.length; index++) {
+        const options = [];
+        for (let j = 0; j < scenario.lineList[index].options.length; j++) {
+          options.push(optionList[scenario.lineList[index].options[j]]);
+        }
+        const line = await new ScenarioLine({
+          ...scenario.lineList[index],
+          options,
+        }).save();
+        lineList.push(line._id);
       }
-    }
 
-    const positiveOutcome = await new ScenarioOutcome(
-      scenario.positiveOutcome
-    ).save();
-    const negativeOutcome = await new ScenarioOutcome(
-      scenario.negativeOutcome
-    ).save();
-    const newScenario = new Scenario({
-      ...scenario,
-      startingLine: lineList[scenario.startingLine],
-      lineList,
-      optionList,
-      positiveOutcome,
-      negativeOutcome,
-    });
-    return newScenario
-      .save()
-      .then((scenario) => {
-        res.status(201).json(scenario);
-      })
-      .catch((error) => {
-        res.status(500).json({ message: error.message || error });
+      for (let i = 0; i < scenario.optionList.length; i++) {
+        if (scenario.optionList[i].nextLine !== undefined) {
+          const index = scenario.optionList[i].nextLine;
+
+          if (index !== undefined)
+            await ScenarioOption.updateOne(
+              { _id: optionList[i] },
+              {
+                $set: {
+                  nextLine: lineList[index],
+                },
+              }
+            );
+        }
+      }
+
+      const positiveOutcome = await new ScenarioOutcome(
+        scenario.positiveOutcome
+      ).save();
+      const negativeOutcome = await new ScenarioOutcome(
+        scenario.negativeOutcome
+      ).save();
+      const newScenario = new Scenario({
+        ...scenario,
+        startingLine: lineList[scenario.startingLine],
+        lineList,
+        optionList,
+        positiveOutcome,
+        negativeOutcome,
       });
+      return newScenario
+        .save()
+        .then((scenario) => {
+          res.status(201).json(scenario);
+        })
+        .catch((error) => {
+          res.status(500).json({ message: error.message || error });
+        });
+    }
+    catch (error: any) {
+      res.status(500).json({ message: error.message || error });
+    }
   }
 
   async getScenario(req: Request, res: Response, next: NextFunction) {
@@ -85,11 +94,11 @@ class ScenarioConttroller {
         },
         {
           path: "positiveOutcome",
-          select: "-_id -createdAt -updatedAt -__v",
+          select: "-createdAt -updatedAt -__v",
         },
         {
           path: "negativeOutcome",
-          select: "-_id -createdAt -updatedAt -__v",
+          select: "-createdAt -updatedAt -__v",
         },
       ])
       .then((scenario) => {
@@ -108,7 +117,7 @@ class ScenarioConttroller {
     const { id } = req.params;
     return Scenario.findById(id)
       .select(
-        "-startingLine -lineList -optionList -positiveOutcome -negativeOutcome -characters -createdAt -updatedAt -__v"
+        "-startingLine -lineList -optionList -positiveOutcome -negativeOutcome -characters -createdAt -__v"
       )
       .then((scenario) => {
         res.status(scenario ? 200 : 404).json(
@@ -135,11 +144,11 @@ class ScenarioConttroller {
         },
         {
           path: "positiveOutcome",
-          select: "-_id -createdAt -updatedAt -__v",
+          select: "-createdAt -updatedAt -__v",
         },
         {
           path: "negativeOutcome",
-          select: "-_id -createdAt -updatedAt -__v",
+          select: "-createdAt -updatedAt -__v",
         },
       ])
       .then((scenarios) => {
@@ -153,7 +162,7 @@ class ScenarioConttroller {
   async getScenariosPreview(req: Request, res: Response, next: NextFunction) {
     return Scenario.find()
       .select(
-        "-startingLine -lineList -optionList -positiveOutcome -negativeOutcome -characters -createdAt -updatedAt -__v"
+        "-startingLine -lineList -optionList -positiveOutcome -negativeOutcome -characters -createdAt -__v"
       )
       .then((scenarios) => {
         res.status(200).json(scenarios);

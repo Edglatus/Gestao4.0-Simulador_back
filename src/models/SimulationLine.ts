@@ -5,9 +5,11 @@ export interface ISimulationLine {
   nextLineId?: ObjectId;
   optionIds: Array<ObjectId>;
   conditionalFlag?: string;
-  conditionalValue: boolean;
+  conditionalValue?: boolean;
   triggeredFlag?: string;
-  triggeredValue: boolean;
+  triggeredValue?: boolean;
+  animationFlag: string;
+  addedArtifact: ObjectId;
 }
 
 export interface ISimulationLineModel extends ISimulationLine, Document {
@@ -29,9 +31,14 @@ const SimulationLineSchema: Schema = new Schema(
       ref: "simulationOptions",
     },
     conditionalFlag: { type: String, default: "" },
-    conditionalValue: { type: Boolean, required: true },
+    conditionalValue: { type: Boolean, default: false },
     triggeredFlag: { type: String, default: "" },
-    triggeredValue: { type: Boolean, required: true },
+    triggeredValue: { type: Boolean, default: false },
+    animationFlag: { type: String, required: true },
+    addedArtifact: {
+      type: Schema.Types.ObjectId,
+      ref: "simulationArtifacts",
+    },
   },
   {
     timestamps: true,

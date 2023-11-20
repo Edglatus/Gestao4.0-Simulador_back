@@ -7,7 +7,7 @@ const { port } = config.server;
 const app = customExpress();
 
 mongoose
-  .connect(config.mongo.url)
+  .connect(config.mongo.url, config.mongo.options)
   .then(() => {
     Logging.info("Connected to mongoDB.");
     app.listen(port, () =>

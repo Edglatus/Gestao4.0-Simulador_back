@@ -4,8 +4,12 @@ import FileManager from "../common/FileManager";
 
 class FileController {
   private static servableFiles: Array<string> = [
+    "quizBackgrounds",
+    "scnBackgrounds",
     "questionsImages",
     "portraitImages",
+    "artifactImages",
+    "assetFiles",
   ];
 
   async downloadFile(req: Request, res: Response) {

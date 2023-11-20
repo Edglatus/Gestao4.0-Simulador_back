@@ -2,18 +2,84 @@ import { Request, Response, NextFunction } from "express";
 import mongoose from "mongoose";
 import validateId from "../common/validateId";
 import Quiz from "../models/Quiz";
+import Question from "../models/Question";
+import List from "../models/List";
+import QuizItem from "../models/QuizItem";
+import FileManager from "../common/FileManager";
+import { ApiQuiz } from "../middlewares/apiSchema";
 
 class QuizController {
   async createQuiz(req: Request, res: Response, next: NextFunction) {
-    const quiz = new Quiz(req.body);
-    return quiz
-      .save()
-      .then((quiz) => {
-        res.status(201).json(quiz);
+    try {
+
+      const quiz: ApiQuiz = JSON.parse(req.body.quiz);
+      
+      let uploadedFiles;
+      
+      if(req.files) {
+        uploadedFiles = await FileManager.upload(req.files, "questionsImages");
+      }
+  
+      const itemIds = [];
+      for (const item of quiz.itemList) {
+        const questionIds = [];
+        const list = item.list;
+        for (const question of list.questions) {
+          const imageIds = [];
+  
+          if(uploadedFiles) {
+            for (let i = 0; i < question.imageIndexes.length; i++) {
+              const imgIndex = question.imageIndexes[i];              
+              imageIds.push(uploadedFiles[imgIndex].id);
+            }
+          }
+  
+          let newQuestion;
+  
+          const foundQuestion = await Question.findOne({prompt: question.prompt}).exec();
+  
+          if(foundQuestion == undefined)
+            newQuestion = await new Question({...question, images: imageIds}).save();
+          else{
+            await Question.findOneAndUpdate({_id: foundQuestion._id}, new Question({...question, images: imageIds, _id: foundQuestion._id})).exec();
+            newQuestion = {_id: foundQuestion._id};
+          }
+  
+          questionIds.push(newQuestion._id);
+        }
+  
+        var newList;
+        const foundList = await List.findOne({title: list.title}).exec();
+        if(foundList == undefined)
+          newList = await new List({...list, questions: questionIds}).save();
+        else {
+          await List.findOneAndUpdate({_id: foundList._id}, new List({...list, _id: foundList._id, questions: questionIds})).exec();
+          newList = {_id: foundList._id};
+        }
+        
+        const newItem = await new QuizItem({...item, list: newList._id}).save();
+  
+        itemIds.push(newItem._id);
+      }
+  
+      const newQuiz = new Quiz({
+        ...quiz,
+        itemList: itemIds
       })
-      .catch((error) => {
-        res.status(500).json({ message: error.message || error });
+  
+      // const quiz = new Quiz(req.body);
+      return newQuiz
+        .save()
+        .then((quiz) => {
+          res.status(201).json(quiz);
+        })
+        .catch((error) => {
+          res.status(500).json({ message: error.message || error });
       });
+    }
+    catch(error: any) {
+      res.status(500).json({ message: error.message || error });
+    }
   }
 
   async getQuiz(req: Request, res: Response, next: NextFunction) {
@@ -93,6 +159,9 @@ class QuizController {
           quantity: {
             $sum: "$itemList.list.quantity",
           },
+          updatedAt: 1,
+          createdAt: 1,
+          backgroundURL: 1,
         },
       },
       {
@@ -128,7 +197,7 @@ class QuizController {
   async getQuizPreview(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
     return Quiz.findById(id)
-      .select("-itemList -createdAt -updatedAt -__v")
+      .select("-itemList -createdAt -backgroundURL -__v")
       .then((quiz) => {
         res.status(quiz ? 200 : 404).json(
           quiz ?? {
@@ -209,6 +278,9 @@ class QuizController {
           quantity: {
             $sum: "$itemList.list.quantity",
           },
+          updatedAt: 1,
+          createdAt: 1,
+          backgroundURL: 1,
         },
       },
       {
@@ -286,6 +358,7 @@ class QuizController {
           quantity: {
             $sum: "$itemList.list.quantity",
           },
+          updatedAt: 1,
         },
       },
     ])
