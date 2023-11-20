@@ -14,7 +14,7 @@ export interface IScenarioOptionModel extends IScenarioOption, Document {
 
 const ScenarioOptionSchema: Schema = new Schema(
   {
-    prompt: { type: String },
+    prompt: { type: String, default: '' },
     nextLine: {
       type: Schema.Types.ObjectId,
       ref: "scenarioLines",

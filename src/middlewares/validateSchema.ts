@@ -1,4 +1,4 @@
-import Joi, { CoerceResult, ObjectSchema } from "joi";
+import Joi, { CoerceResult, ObjectSchema, object } from "joi";
 import { Request, Response, NextFunction } from "express";
 import Logging from "../library/Logging";
 import { IQuestion } from "../models/Question";
@@ -149,57 +149,61 @@ export const schemas = {
     }),
   },
   simulation: {
-    create: Joi.object<ISimulationScenario>({
-      title: Joi.string().required(),
-      description: Joi.string().required(),
-      characterList: Joi.array()
-        .items({
-          character: Joi.string()
-            .regex(/^[0-9a-fA-F]{24}$/)
-            .required(),
-          defaultDialogueId: Joi.number().required(),
-          mapLocationIndex: Joi.number().required(),
-          dialogueIds: Joi.array().items(Joi.number()).required(),
-          // prefabAsset: Joi.string()
-          //   .regex(/^[0-9a-fA-F]{24}$/)
-          //   .required(),
-        })
-        .required(),
-      dialogueList: Joi.array()
-        .items({
-          defaultLineId: Joi.number().required(),
-          startingLineId: Joi.number().required(),
-          lineIds: Joi.array().items(Joi.number()).required(),
-          optionIds: Joi.array().items(Joi.number()).required(),
-          conditionalFlag: Joi.string().allow("").default(""),
-          conditionalValue: Joi.string().required(),
-        })
-        .required(),
-      lineList: Joi.array()
-        .items({
-          prompt: Joi.string().required(),
-          conditionalFlag: Joi.string().allow("").default(""),
-          conditionalValue: Joi.string().required(),
-          triggeredFlag: Joi.string().allow("").default(""),
-          triggeredValue: Joi.string().required(),
-          nextLineId: Joi.number(),
-          optionIds: Joi.array().items(Joi.number()).required(),
-        })
-        .required(),
-      optionList: Joi.array()
-        .items({
-          prompt: Joi.string().required(),
-          nextLineId: Joi.number(),
-          score: Joi.number().required(),
-          triggeredFlag: Joi.string().allow("").default(""),
-          triggeredValue: Joi.string().required(),
-        })
-        .required(),
-      dialogueFlags: Joi.array().items(Joi.string().required()).required(),
-      // mapAsset: Joi.string()
-      //   .regex(/^[0-9a-fA-F]{24}$/)
-      //   .required(),
-    }),
+    create:
+      custom.object().keys({
+        simulation:
+          Joi.object<ISimulationScenario>({
+            title: Joi.string().required(),
+            description: Joi.string().required(),
+            characterList: Joi.array()
+              .items({
+                character: Joi.string()
+                  .regex(/^[0-9a-fA-F]{24}$/)
+                  .required(),
+                defaultDialogueId: Joi.number().required(),
+                mapLocationIndex: Joi.number().required(),
+                dialogueIds: Joi.array().items(Joi.number()).required(),
+                // prefabAsset: Joi.string()
+                //   .regex(/^[0-9a-fA-F]{24}$/)
+                //   .required(),
+              })
+              .required(),
+            dialogueList: Joi.array()
+              .items({
+                defaultLineId: Joi.number().required(),
+                startingLineId: Joi.number().required(),
+                lineIds: Joi.array().items(Joi.number()).required(),
+                optionIds: Joi.array().items(Joi.number()).required(),
+                conditionalFlag: Joi.string().allow("").default(""),
+                conditionalValue: Joi.boolean().default(false),
+              })
+              .required(),
+            lineList: Joi.array()
+              .items({
+                prompt: Joi.string().required(),
+                conditionalFlag: Joi.string().allow("").default(""),
+                conditionalValue: Joi.boolean().default(false),
+                triggeredFlag: Joi.string().allow("").default(""),
+                triggeredValue: Joi.boolean().default(false),
+                nextLineId: Joi.number(),
+                optionIds: Joi.array().items(Joi.number()).required(),
+              })
+              .required(),
+            optionList: Joi.array()
+              .items({
+                prompt: Joi.allow("").default(""),
+                nextLineId: Joi.number(),
+                score: Joi.number().required(),
+                triggeredFlag: Joi.string().allow("").default(""),
+                triggeredValue: Joi.boolean().default(false),
+              })
+              .required(),
+            dialogueFlags: Joi.array().items(Joi.string().required()).required(),
+            // mapAsset: Joi.string()
+            //   .regex(/^[0-9a-fA-F]{24}$/)
+            //   .required(),
+          }),
+      })
   },
   simulationAsset: {
     create: Joi.object<ISimulationAsset>({

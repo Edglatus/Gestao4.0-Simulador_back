@@ -16,14 +16,14 @@ export interface ISimulationOptionModel extends ISimulationOption, Document {
 
 const SimulationOptionSchema: Schema = new Schema(
   {
-    prompt: { type: String, required: true },
+    prompt: { type: String, default: '' },
     nextLineId: {
       type: Schema.Types.ObjectId,
       ref: "simulationLines",
     },
     score: { type: Number, required: true },
     triggeredFlag: { type: String, default: "" },
-    triggeredValue: { type: Boolean, required: true },
+    triggeredValue: { type: Boolean, default: false },
   },
   {
     timestamps: true,

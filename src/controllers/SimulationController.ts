@@ -26,134 +26,140 @@ class SimulationConttroller {
   }
 
   async createSimulation(req: Request, res: Response, next: NextFunction) {
-    const simulation: ApiSimulation = req.body.simulation;
-    const lineList = [];
-    const optionList = [];
-    const dialogueList = [];
-    const characterList = [];
-    const artifactList = [];
+    try {
+      const simulation: ApiSimulation = JSON.parse(req.body.simulation);
 
-    let uploadedFiles;
+      const lineList = [];
+      const optionList = [];
+      const dialogueList = [];
+      const characterList = [];
+      const artifactList = [];
 
-    if (req.files) {
-      uploadedFiles = await FileManager.upload(req.files, "artifactImages");
-    }
+      let uploadedFiles;
 
-    if (uploadedFiles === undefined || simulation.artifactList.length > uploadedFiles.length)
-      throw new Error("Could not find required artifact files");
-
-    for (let index = 0; index < simulation.artifactList.length; index++) {
-      const artifact = await new SimulationArtifact({
-        artifactName: simulation.artifactList[index].artifactName,
-        imageURL: uploadedFiles[simulation.artifactList[index].imageIndex],
-        description: simulation.artifactList[index].description,
-        category: simulation.artifactList[index].category,
-      }).save();
-      artifactList.push(artifact._id);
-    }
-
-    for (let index = 0; index < simulation.optionList.length; index++) {
-      const option = await new SimulationOption({
-        prompt: simulation.optionList[index].prompt,
-        triggeredFlag: simulation.optionList[index].triggeredFlag,
-        triggeredValue: simulation.optionList[index].triggeredValue,
-        score: simulation.optionList[index].score,
-      }).save();
-      optionList.push(option._id);
-    }
-
-    for (let index = 0; index < simulation.lineList.length; index++) {
-      const optionIds = [];
-      for (let j = 0; j < simulation.lineList[index].optionIds.length; j++) {
-        optionIds.push(optionList[simulation.lineList[index].optionIds[j]]);
+      if (req.files) {
+        uploadedFiles = await FileManager.upload(req.files, "artifactImages");
       }
-      const line = await new SimulationLine({
-        prompt: simulation.lineList[index].prompt,
-        conditionalFlag: simulation.lineList[index].conditionalFlag,
-        conditionalValue: simulation.lineList[index].conditionalValue,
-        triggeredFlag: simulation.lineList[index].triggeredFlag,
-        triggeredValue: simulation.lineList[index].triggeredValue,
-        optionIds,
-        animationFlag: simulation.lineList[index].animationFlag,
-        addedArtifact: artifactList[simulation.lineList[index].addedArtifact],
-        //addedArtifact: simulation.lineList[index].addedArtifact,
-      }).save();
-      lineList.push(line._id);
-    }
 
-    for (let index = 0; index < simulation.optionList.length; index++) {
-      if (simulation.optionList[index].nextLineIndex) {
-        await SimulationOption.updateOne(
-          { _id: optionList[index] },
-          {
-            $set: {
-              nextLineId: lineList[simulation.optionList[index].nextLineIndex],
-            },
-          }
-        );
+      if (uploadedFiles === undefined || simulation.artifactList.length > uploadedFiles.length)
+        throw new Error("Could not find required artifact files");
+
+      for (let index = 0; index < simulation.artifactList.length; index++) {
+        const artifact = await new SimulationArtifact({
+          artifactName: simulation.artifactList[index].artifactName,
+          imageURL: uploadedFiles[simulation.artifactList[index].imageIndex].id,
+          description: simulation.artifactList[index].description,
+          category: simulation.artifactList[index].category,
+        }).save();
+        artifactList.push(artifact._id);
       }
-    }
 
-    for (let i = 0; i < simulation.lineList.length; i++) {
-      if (simulation.lineList[i].nextLineIndex) {
-        const index = simulation.lineList[i].nextLineIndex;
+      for (let index = 0; index < simulation.optionList.length; index++) {
+        const option = await new SimulationOption({
+          prompt: simulation.optionList[index].prompt,
+          triggeredFlag: simulation.optionList[index].triggeredFlag,
+          triggeredValue: simulation.optionList[index].triggeredValue,
+          score: simulation.optionList[index].score,
+        }).save();
+        optionList.push(option._id);
+      }
 
-        if (index !== undefined)
-          await SimulationLine.updateOne(
-            { _id: lineList[i] },
+      for (let index = 0; index < simulation.lineList.length; index++) {
+        const optionIds = [];
+        for (let j = 0; j < simulation.lineList[index].optionIds.length; j++) {
+          optionIds.push(optionList[simulation.lineList[index].optionIds[j]]);
+        }
+        const line = await new SimulationLine({
+          prompt: simulation.lineList[index].prompt,
+          conditionalFlag: simulation.lineList[index].conditionalFlag,
+          conditionalValue: simulation.lineList[index].conditionalValue,
+          triggeredFlag: simulation.lineList[index].triggeredFlag,
+          triggeredValue: simulation.lineList[index].triggeredValue,
+          optionIds,
+          animationFlag: simulation.lineList[index].animationFlag,
+          addedArtifact: artifactList[simulation.lineList[index].addedArtifact],
+          //addedArtifact: simulation.lineList[index].addedArtifact,
+        }).save();
+        lineList.push(line._id);
+      }
+
+      for (let index = 0; index < simulation.optionList.length; index++) {
+        if (simulation.optionList[index].nextLineIndex) {
+          await SimulationOption.updateOne(
+            { _id: optionList[index] },
             {
               $set: {
-                nextLineId: lineList[index],
+                nextLineId: lineList[simulation.optionList[index].nextLineIndex],
               },
             }
           );
+        }
       }
-    }
 
-    for (let index = 0; index < simulation.dialogueList.length; index++) {
-      const dialogue = await new SimulationDialogue({
-        defaultLineId: lineList[simulation.dialogueList[index].defaultLineId],
-        startingLineId: lineList[simulation.dialogueList[index].startingLineId],
-        lineIds: lineList.filter((id, filterIndex) =>
-          simulation.dialogueList[index].lineIds.includes(filterIndex)
-        ),
-        optionIds: optionList.filter((id, filterIndex) =>
-          simulation.dialogueList[index].optionIds.includes(filterIndex)
-        ),
-        conditionalFlag: simulation.dialogueList[index].conditionalFlag,
-        conditionalValue: simulation.dialogueList[index].conditionalValue,
-      }).save();
-      dialogueList.push(dialogue._id);
-    }
+      for (let i = 0; i < simulation.lineList.length; i++) {
+        if (simulation.lineList[i].nextLineIndex) {
+          const index = simulation.lineList[i].nextLineIndex;
 
-    for (let index = 0; index < simulation.characterList.length; index++) {
-      const character = await new SimulationCharacter({
-        ...simulation.characterList[index],
-        defaultDialogueId:
-          dialogueList[simulation.characterList[index].defaultDialogueId],
-        dialogueIds: dialogueList.filter((id, filterIndex) =>
-          simulation.characterList[index].dialogueIds.includes(filterIndex)
-        ),
-      }).save();
-      characterList.push(character._id);
-    }
+          if (index !== undefined)
+            await SimulationLine.updateOne(
+              { _id: lineList[i] },
+              {
+                $set: {
+                  nextLineId: lineList[index],
+                },
+              }
+            );
+        }
+      }
 
-    const newSimulation = new SimulationScenario({
-      ...simulation,
-      characterList,
-      dialogueList,
-      lineList,
-      optionList,
-      artifactList,
-    });
-    return newSimulation
-      .save()
-      .then((simulation) => {
-        res.status(201).json(simulation);
-      })
-      .catch((error) => {
-        res.status(500).json({ message: error.message || error });
+      for (let index = 0; index < simulation.dialogueList.length; index++) {
+        const dialogue = await new SimulationDialogue({
+          defaultLineId: lineList[simulation.dialogueList[index].defaultLineId],
+          startingLineId: lineList[simulation.dialogueList[index].startingLineId],
+          lineIds: lineList.filter((id, filterIndex) =>
+            simulation.dialogueList[index].lineIds.includes(filterIndex)
+          ),
+          optionIds: optionList.filter((id, filterIndex) =>
+            simulation.dialogueList[index].optionIds.includes(filterIndex)
+          ),
+          conditionalFlag: simulation.dialogueList[index].conditionalFlag,
+          conditionalValue: simulation.dialogueList[index].conditionalValue,
+        }).save();
+        dialogueList.push(dialogue._id);
+      }
+
+      for (let index = 0; index < simulation.characterList.length; index++) {
+        const character = await new SimulationCharacter({
+          ...simulation.characterList[index],
+          defaultDialogueId:
+            dialogueList[simulation.characterList[index].defaultDialogueId],
+          dialogueIds: dialogueList.filter((id, filterIndex) =>
+            simulation.characterList[index].dialogueIds.includes(filterIndex)
+          ),
+        }).save();
+        characterList.push(character._id);
+      }
+
+      const newSimulation = new SimulationScenario({
+        ...simulation,
+        characterList,
+        dialogueList,
+        lineList,
+        optionList,
+        artifactList,
       });
+      return newSimulation
+        .save()
+        .then((simulation) => {
+          res.status(201).json(simulation);
+        })
+        .catch((error) => {
+          res.status(500).json({ message: error.message || error });
+        });
+    }
+    catch (error: any) {
+      res.status(500).json({ message: error.message || error });
+    }
   }
 
   async getSimulation(req: Request, res: Response, next: NextFunction) {
