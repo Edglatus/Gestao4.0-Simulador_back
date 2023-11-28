@@ -9,6 +9,7 @@ import SimulationScenario from "../models/SimulationScenario";
 import SimulationArtifact from "../models/SimulationArtifact";
 import { ApiSimulation } from "../middlewares/apiSchema";
 import FileManager from "../common/FileManager";
+import Character from "../models/Character";
 
 class SimulationConttroller {
   async createSimulationAsset(req: Request, res: Response, next: NextFunction) {
@@ -129,8 +130,16 @@ class SimulationConttroller {
       }
 
       for (let index = 0; index < simulation.characterList.length; index++) {
+        const findCharacter = await Character.findById(simulation.characterList[index].character).exec();
+
+        if(findCharacter == null) {
+          res.status(400).json({message: "character not found."});
+          return;
+        }
+
         const character = await new SimulationCharacter({
           ...simulation.characterList[index],
+          character: findCharacter,
           defaultDialogueId:
             dialogueList[simulation.characterList[index].defaultDialogueId],
           dialogueIds: dialogueList.filter((id, filterIndex) =>
